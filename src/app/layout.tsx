@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { cookieToInitialState } from "wagmi";
+import { config } from "@/lib/wagmi";
+import { headers } from "next/headers";
+import Providers from "@/lib/providers";
+import AppKitProvider from "@/lib/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,13 +15,22 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
+	const initialState = cookieToInitialState(config, headers().get('cookie'))
+  function cn(arg0: string, variable: any): string | undefined {
+    throw new Error("Function not implemented.");
+  }
+
+	return (
+		<html lang='en' suppressHydrationWarning>
+			<Providers>
+				<body>
+				<AppKitProvider  initialState={initialState}>{children}</AppKitProvider >
+				</body>
+			</Providers>
+		</html>
+	)
 }
