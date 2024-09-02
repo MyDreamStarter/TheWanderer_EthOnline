@@ -1,0 +1,35 @@
+.hero-background {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0.3;
+    background-image: linear-gradient(#e6e6e6 1.3px, transparent 1.3px), linear-gradient(to right, #e6e6e6 1.3px, #ffffff 1.3px);
+    background-size: 26px 26px;
+  }
+  
+  #main-hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .hero-background_raids {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 0;
+    opacity: 0.3;
+    background-image: linear-gradient(#e6e6e6 1.3px, transparent 1.3px), linear-gradient(to right, #e6e6e6 1.3px, #ffffff 1.3px);
+    background-size: 30px 30px;
+  }
+  
+  #main-hero_raids {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
