@@ -128,12 +128,8 @@ export default function DashboardPage() {
   //         }
   //     };
 
-  const handleOnSubmit = (event: { preventDefault: () => void; }) => {
-    event.preventDefault(); // Prevent the default form submission
-    deployContract(); // Call your deployment function
-  };
-
   const deployContract = async () => {
+    console.log("Deploying contract called");
     if (!walletClient) {
       throw new Error("Wallet client not available");
     }
@@ -143,7 +139,6 @@ export default function DashboardPage() {
         abi: Simplestore.abi,
         bytecode: Simplestore.bytecode as Hex,
         account: walletAddress,
-        args: ["0xf5d0A178a61A2543c98FC4a73E3e78a097DBD9EE"],
       });
 
       if (!hash) {
@@ -164,6 +159,14 @@ export default function DashboardPage() {
       throw error;
     }
   };
+
+
+  // const handleOnSubmit = (event: { preventDefault: () => void; }) => {
+  //   event.preventDefault(); // Prevent the default form submission
+  //   deployContract(); // Call your deployment function
+  // };
+
+  
 
   return (
     <div>
@@ -228,6 +231,8 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      <button onClick={deployContract}>Deploy Contract</button>
 
       {isDrawerOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
@@ -308,9 +313,9 @@ export default function DashboardPage() {
               </div>
               <div className="flex justify-end">
                 <button
-                  type="submit"
+                  // type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out"
-                  onSubmit={handleOnSubmit}
+                  onSubmit={deployContract}
                 >
                   Create
                 </button>
