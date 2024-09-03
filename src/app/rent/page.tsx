@@ -22,7 +22,7 @@ const CarRentalLanding: React.FC = () => {
           </p>
           <a
             className="btn group mb-4 text-white shadow hover:opacity-90 transition-all duration-300"
-            href="/car-rental/all"
+            href="/rent/all"
             style={{
               backgroundImage: "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
               padding: "10px 20px",
