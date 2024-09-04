@@ -7,6 +7,8 @@ import raids_4 from "../../../public/assets/raids_4.png";
 import raids_5 from "../../../public/assets/raids_5.png";
 import raids_solo from "../../../public/assets/RAIDS_SOLO.png";
 import raids_group from "../../../public/assets/RAIDS_GROUP.png";
+import raids_party from "../../../public/assets/raids_party.jpg";
+
 import r1 from "../../../public/assets/r1.png";
 import r2 from "../../../public/assets/r2.png";
 import Nav from "@/components/ui/header";
@@ -79,7 +81,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Solo Trip Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-gray-100 min-h-screen ">
+      <div className="flex flex-col md:flex-row items-center justify-between p-10 pr-20 pl-20 bg-gray-100 min-h-screen ">
         <div className="md:w-1/2 mb-8 md:mb-0">
           <h2 className="text-sm font-semibold text-indigo-600 mb-2">
             SOLO TRIP
@@ -113,7 +115,7 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        <div className="md:w-1/4 relative mr-200">
+        <div className="md:w-1/3 relative mr-200">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-pink-500 opacity-50 blur-[124px] z-0" />
           <div className="relative z-10 bg-white rounded-lg shadow-xl p-6">
             <Image
@@ -126,7 +128,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Group Trip Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-gray-100 min-h-screen">
+      <div className="flex flex-col md:flex-row items-center justify-between p-10 pr-20 pl-20 bg-gray-100 min-h-screen">
         <div className="md:w-1/3 relative mr-200">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-pink-500 opacity-50 blur-[124px] z-0" />
           <div className="relative z-10 bg-white rounded-lg shadow-xl p-6">
@@ -173,7 +175,7 @@ const Home: React.FC = () => {
       </div>
 
       {/* Event Trip Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between p-8 bg-gray-100 min-h-screen">
+      <div className="flex flex-col md:flex-row items-center p-10 pr-20 pl-20 justify-between p-8 bg-gray-100 min-h-screen">
         <div className="md:w-1/2 mb-8 md:mb-0">
           <h2 className="text-sm font-semibold text-indigo-600 mb-2">
             EVENT TRIP
@@ -210,7 +212,7 @@ const Home: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-pink-500 opacity-50 blur-[124px] z-0" />
           <div className="relative z-10 bg-white rounded-lg shadow-xl p-6">
             <Image
-              src={raids_3}
+              src={raids_party}
               alt="Event Trip Preview"
               className="w-full rounded-lg"
             />
