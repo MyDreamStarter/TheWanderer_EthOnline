@@ -1,13 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { DIMO } from '@dimo-network/dimo-node-sdk';
 
-interface Request {
-    url: string;
-    error: any;
-}
-
-
-export async function GET(request: Request) {
+// Update the request parameter type to NextRequest
+export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const location = searchParams.get('location') || '';
 
