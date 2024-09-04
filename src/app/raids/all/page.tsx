@@ -70,7 +70,7 @@ export default function DashboardPage() {
         throw new Error("Failed to execute deploy contract transaction");
       }
 
-      console.log(hash)
+      console.log(hash)  
 
       const txn = await publicClient.waitForTransactionReceipt({ hash });
 
