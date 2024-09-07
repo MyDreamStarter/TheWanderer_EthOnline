@@ -32,7 +32,7 @@ export default function HeroHome() {
               {/* Voyager <br className="max-lg:hidden" /> */}
               <div className="flex flex-col items-center p-8 relative">
                 <h1 className="text-9xl font-bold bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B] bg-clip-text text-transparent mb-1 z-10">
-                  VOYAGER
+                  THE WANDERER
                 </h1>
                 <svg
                   className="w-64 h-120 absolute -bottom-4 left-1/2 transform -translate-x-1/2"
@@ -99,7 +99,7 @@ export default function HeroHome() {
                     }}
                   >
                     <span className="relative inline-flex items-center justify-center">
-                      Create Account{" "}
+                      Connect Wallet{" "}
                       <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
                         -&gt;
                       </span>

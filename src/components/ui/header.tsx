@@ -53,6 +53,15 @@ export default function Header() {
             </li>
             <li style={{ color: "grey" }}>
               <Link
+                href="/"
+                className=" text-gray-800  hover:bg-gray-50 "
+                style={{ padding: "10px" }}
+              >
+                Home
+              </Link>
+            </li>
+            <li style={{ color: "grey" }}>
+              <Link
                 href="/raids"
                 className=" text-gray-800  hover:bg-gray-50 "
                 style={{ padding: "10px" }}
@@ -88,6 +97,15 @@ export default function Header() {
                 style={{ padding: "10px" }}
               >
                 Cult
+              </Link>
+            </li>
+            <li style={{ color: "grey" }}>
+              <Link
+                href="/chat"
+                className=" text-gray-800  hover:bg-gray-50 "
+                style={{ padding: "10px" }}
+              >
+                Chat
               </Link>
             </li>
 

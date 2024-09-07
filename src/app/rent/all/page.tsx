@@ -1,68 +1,86 @@
 "use client";
-import { useEffect, useState } from "react";
-
-interface Vehicle {
-    id: number;
-    type: "car" | "bike";
-    name: string;
-    model: string;
-    year: number;
-    imageUrl: string;
-}
+import { useState } from "react";
+import Header from "@/components/ui/header";
 
 export default function Home() {
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const [location, setLocation] = useState<string>("");
-    const [locationMessage, setLocationMessage] = useState<string | null>(null);
+    const [isRentDialogOpen, setRentDialogOpen] = useState(false);
+    const [isListDialogOpen, setListDialogOpen] = useState(false);
 
-    const handleSearch = async () => {
-        const response = await fetch(`/api/vehicles?location=${location}`);
-        if (response.ok) {
-            const data = await response.json();
-            setVehicles(data);
-        } else {
-            setLocationMessage("Failed to fetch vehicles. Please try again.");
-        }
+    const handleOpenRentDialog = () => setRentDialogOpen(true);
+    const handleOpenListDialog = () => setListDialogOpen(true);
+    const handleCloseDialogs = () => {
+        setRentDialogOpen(false);
+        setListDialogOpen(false);
     };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-[#f2f2f2] to-[#f7f5f0] p-4">
-             <header className="bg-blue-600 text-white p-4">
-            <h1 className="text-2xl font-bold">Vehicle Rental App</h1>
-        </header>
-            <input
-                type="text"
-                placeholder="Enter location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-80 px-4 py-2 border rounded-md shadow-lg"
-            />
-            <button
-                onClick={handleSearch}
-                className="px-4 py-2 bg-green-600 text-white rounded-full shadow-md"
-            >
-                Search
-            </button>
-            {locationMessage && <p className="text-red-500">{locationMessage}</p>}
-            <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-                {vehicles.map((vehicle) => (
-                    <div key={vehicle.id} className="bg-white rounded-lg shadow-lg">
-                        <img
-                            src={vehicle.imageUrl}
-                            alt={vehicle.name}
-                            className="rounded-t-lg"
-                            width={300}
-                            height={200}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold">{vehicle.name}</h3>
-                            <p>{vehicle.model}</p>
-                            <p>{vehicle.year}</p>
-                            <p className="text-sm text-gray-500">Type: {vehicle.type}</p>
-                        </div>
+            <Header />
+            <h1 className="text-7xl font-bold bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B] bg-clip-text text-transparent mb-1 z-10">
+                WANDERER X DIMO
+            </h1>
+
+            <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 px-4" style={{ height: '300px' }}>
+                {/* 1st Card - Rent a Car */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center border border-gray-200" style={{ height: 'full', margin: '30px' }}>
+                    <div className="mt-4 text-center">
+                        <h2 className="text-xl font-bold mb-2">Rent a Car</h2>
+                        <p className="text-gray-600">
+                            Find a car for rent near you and explore various vehicle options for your journey.
+                        </p>
+                        <button
+                            onClick={handleOpenRentDialog}
+                            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            Rent Now
+                        </button>
                     </div>
-                ))}
+                </div>
+
+                {/* 2nd Card - List a Car */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center border border-gray-200" style={{ height: 'full', margin: '30px' }}>
+                    <div className="mt-4 text-center">
+                        <h2 className="text-xl font-bold mb-2">List a Car</h2>
+                        <p className="text-gray-600">
+                            List your car on our platform and start earning money by renting it out to others.
+                        </p>
+                        <button
+                            onClick={handleOpenListDialog}
+                            className="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                            List Now
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            {/* Rent Dialog */}
+            {isRentDialogOpen && (
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white w-full h-full p-6 relative flex flex-col">
+                        <button
+                            onClick={handleCloseDialogs}
+                            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700">
+                            &times;
+                        </button>
+                        <h2 className="text-3xl font-bold mb-4">Rent a Car</h2>
+                        <p>Content for the rent a car dialog goes here...</p>
+                    </div>
+                </div>
+            )}
+
+            {/* List Dialog */}
+            {isListDialogOpen && (
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white w-full h-full p-6 relative flex flex-col">
+                        <button
+                            onClick={handleCloseDialogs}
+                            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700">
+                            &times;
+                        </button>
+                        <h2 className="text-3xl font-bold mb-4">List a Car</h2>
+                        <p>Content for the list a car dialog goes here...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

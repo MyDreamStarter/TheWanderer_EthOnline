@@ -22,14 +22,26 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [newChatAddress, setNewChatAddress] = useState<string>("");
+  const [loadingConversations, setLoadingConversations] = useState<boolean>(true);
+  const [loadingMessages, setLoadingMessages] = useState<boolean>(false);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [newModalChatAddress, setNewModalChatAddress] = useState<string>("");
 
   // Fetch conversations when XMTP client is available
   useEffect(() => {
     if (!xmtp) return;
 
     const fetchConversations = async () => {
-      const convs = await xmtp.conversations.list();
-      setConversations(convs);
+      setLoadingConversations(true);
+      try {
+        const convs = await xmtp.conversations.list();
+        setConversations(convs);
+      } catch (error) {
+        console.error("Failed to fetch conversations:", error);
+      } finally {
+        setLoadingConversations(false);
+      }
     };
 
     fetchConversations();
@@ -40,14 +52,21 @@ const Chat: React.FC = () => {
     if (!selectedConversation) return;
 
     const fetchMessages = async () => {
-      const msgs = await selectedConversation.messages();
-      setMessages(msgs.map((msg: any) => ({ content: msg.content, sender: msg.senderAddress })));
+      setLoadingMessages(true);
+      try {
+        const msgs = await selectedConversation.messages();
+        setMessages(msgs.map((msg: any) => ({ content: msg.content, sender: msg.senderAddress })));
 
-      for await (const msg of await selectedConversation.streamMessages()) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { content: msg.content, sender: msg.senderAddress },
-        ]);
+        for await (const msg of await selectedConversation.streamMessages()) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { content: msg.content, sender: msg.senderAddress },
+          ]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch messages:", error);
+      } finally {
+        setLoadingMessages(false);
       }
     };
 
@@ -58,14 +77,17 @@ const Chat: React.FC = () => {
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
-    await selectedConversation.send(newMessage);
-    setMessages([...messages, { content: newMessage, sender: walletAddress! }]);
-    setNewMessage("");
+    try {
+      await selectedConversation.send(newMessage);
+      setMessages([...messages, { content: newMessage, sender: walletAddress! }]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   };
 
-  // Function to start a new chat
   const startNewChat = async () => {
-    if (!newChatAddress.trim()) return;
+    if (!newModalChatAddress.trim()) return;
 
     if (!xmtp) {
       console.error("XMTP client is not initialized");
@@ -73,14 +95,20 @@ const Chat: React.FC = () => {
     }
 
     try {
-      const conversation = await xmtp.conversations.newConversation(newChatAddress.trim());
+      const conversation = await xmtp.conversations.newConversation(newModalChatAddress.trim());
       setConversations([...conversations, conversation]);
       setSelectedConversation(conversation);
-      setNewChatAddress("");
+      setNewModalChatAddress("");
+      setIsModalOpen(false); // Close modal after adding
     } catch (error) {
       console.error("Failed to start a new chat", error);
     }
   };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
 
   return (
     <div>
@@ -88,46 +116,54 @@ const Chat: React.FC = () => {
       {walletAddress ? (
         <div className="flex justify-center items-center h-screen bg-gray-100">
           {/* Left Sidebar */}
-          <div className="w-[200px] h-[calc(100%-200px)] bg-gray-800 text-white p-4 rounded-lg m-5 mt-[200px] overflow-y-auto">
+          <div className="w-[400px] h-[calc(100%-120px)] bg-gray-800 text-white p-4 rounded-xl m-5 mt-[100px] overflow-y-auto">
             <button
-              onClick={startNewChat}
+              onClick={toggleModal}
               className="bg-blue-500 w-full text-white p-2 rounded-lg mb-4 flex items-center justify-center"
             >
               + New Chat
             </button>
             <h2 className="text-xl font-bold mb-4">Conversations</h2>
-            {conversations.map((conv, index) => (
-              <div
-                key={index}
-                className={`p-2 mb-2 cursor-pointer rounded-lg text-sm ${
-                  selectedConversation?.peerAddress === conv.peerAddress
-                    ? "bg-gray-600"
-                    : "bg-gray-700"
-                }`}
-                onClick={() => setSelectedConversation(conv)}
-              >
-                {conv.peerAddress}
-              </div>
-            ))}
+            {loadingConversations ? (
+              <p>Loading conversations...</p>
+            ) : (
+              conversations.map((conv, index) => (
+                <div
+                  key={index}
+                  className={`p-2 mb-2 cursor-pointer rounded-lg text-sm ${
+                    selectedConversation?.peerAddress === conv.peerAddress
+                      ? "bg-gray-600"
+                      : "bg-gray-700"
+                  }`}
+                  onClick={() => setSelectedConversation(conv)}
+                >
+                  {conv.peerAddress}
+                </div>
+              ))
+            )}
           </div>
 
           {/* Right Chat Panel */}
-          <div className="w-[600px] h-[calc(100%-200px)] bg-white flex flex-col rounded-lg shadow-lg mt-[200px]">
+          <div className="w-[1100px] h-[calc(100%-115px)] bg-white flex flex-col rounded-lg shadow-lg mt-[90px]">
             {selectedConversation ? (
               <>
                 <div className="flex-1 p-4 overflow-y-auto">
-                  {messages.map((msg, index) => (
-                    <div
-                      key={index}
-                      className={`${
-                        msg.sender === walletAddress
-                          ? "ml-auto bg-white text-black"
-                          : "mr-auto bg-blue-500 text-white"
-                      } p-2 rounded-lg max-w-sm mb-2`}
-                    >
-                      {msg.content}
-                    </div>
-                  ))}
+                  {loadingMessages ? (
+                    <p>Loading messages...</p>
+                  ) : (
+                    messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`${
+                          msg.sender === walletAddress
+                            ? "ml-auto bg-white text-black"
+                            : "mr-auto bg-blue-500 text-white"
+                        } p-2 rounded-lg max-w-sm mb-2`}
+                      >
+                        {msg.content}
+                      </div>
+                    ))
+                  )}
                 </div>
                 <div className="border-t border-gray-300 p-4 flex">
                   <input
@@ -156,6 +192,36 @@ const Chat: React.FC = () => {
           <h2 className="text-2xl text-gray-500">Connect wallet to start</h2>
         </div>
       )}
+      
+      {/* Modal for starting new chat */}
+      {isModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+                <h2 className="text-xl font-bold mb-4">Start New Chat</h2>
+                <input
+                  type="text"
+                  className="w-full p-2 mb-4 border rounded-lg"
+                  value={newModalChatAddress}
+                  onChange={(e) => setNewModalChatAddress(e.target.value)}
+                  placeholder="Enter wallet address..."
+                />
+                <div className="flex justify-end">
+                  <button
+                    onClick={toggleModal}
+                    className="bg-gray-300 text-gray-700 p-2 rounded-lg mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={startNewChat}
+                    className="bg-blue-500 text-white p-2 rounded-lg"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
     </div>
   );
 };
