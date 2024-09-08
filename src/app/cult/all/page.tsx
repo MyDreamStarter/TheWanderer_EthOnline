@@ -3,7 +3,7 @@ import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { Hex, createPublicClient, http } from "viem";
-import { base, baseSepolia, polygonAmoy,sepolia } from "viem/chains";
+import { base, baseSepolia, polygonAmoy,sepolia,morphHolesky } from "viem/chains";
 import { toast, ToastContainer } from "react-toastify";
 import Simplestore from "@/lib/Simplestore.json";
 import Header from "@/components/ui/header";
@@ -46,7 +46,7 @@ export default function DashboardPage() {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = createPublicClient({
-    chain: sepolia,
+    chain: morphHolesky,
     transport: http(),
   });
 
