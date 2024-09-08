@@ -3,7 +3,7 @@ import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { Hex, createPublicClient, http } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { base, baseSepolia, polygonAmoy,sepolia } from "viem/chains";
 import { toast, ToastContainer } from "react-toastify";
 import Simplestore from "@/lib/Simplestore.json";
 import Header from "@/components/ui/header";
@@ -15,7 +15,7 @@ import ApeProfile from "../../../../public/assets/ape_profile.png";
 import Trees from "../../../../public/assets/trees.png.webp";
 
 interface Community {
-  fundingGoal: ReactNode;
+  fundingGoal: number;
   id: number;
   title: string;
   twitter: string;
@@ -46,12 +46,14 @@ export default function DashboardPage() {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = createPublicClient({
-    chain: baseSepolia,
+    chain: sepolia,
     transport: http(),
   });
 
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [countdown, setCountdown] = useState<number>(0);
+
+  const [showChatbutton, setShowChatButton] = useState(false);
 
   // JOIN NOW SELECTED COMMUNITY STATES
   const [selectedCommunity, setSelectedCommunity] = useState({
@@ -491,43 +493,16 @@ export default function DashboardPage() {
                     </p>
                   </div>
 
-                  {/* Buttons */}
-                  <div className="flex justify-around">
-                    <button onClick={handleMindClick}>
-                      <a
-                        className="btn group mb-4 w-full text-white shadow hover:opacity-90 transition-all duration-300 sm:mb-0 sm:w-auto"
-                        href="#0"
-                        style={{
-                          backgroundImage:
-                            "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
-                          boxShadow: "rgba(96, 60, 255, 0.48) 0px 21px 27px -10px",
-                          padding: "10px 20px",
-                          borderRadius: "30px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          minHeight: "34px", 
-                        }}
-                      >
-                        <span className="relative inline-flex items-center justify-center">
-                          MINT{" "}
-                          <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
-                            -&gt;
-                          </span>
-                        </span>
-                      </a>
-                    </button>
-
-                    <button
-                      onClick={handleSupportClick}
-                      className="text-black-500 border border-black-500 px-4 py-2 rounded-md font-bold"
-                    >
-                      Chat
-                    </button>
-                  </div>
+                  
                 </div>
+               
               </div>
+             <div style={{margin:"10px"}}>
+             <button>Join Community</button>
+             <button style={{backgroundColor:'#5865F2',padding:'10px 20px',borderRadius:"10px",color:'white',marginLeft:'20px'}}>Join Discord</button>
+             </div>
             </div>
+            
           </div>
         )}
 

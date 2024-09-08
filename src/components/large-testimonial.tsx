@@ -30,7 +30,7 @@ export default function LargeTestimonial() {
               />
             </div>
             <p className="text-2xl font-bold text-gray-900">
-              “Voyager has simplified my life in more ways than one. From
+              The Wanderer has simplified my life in more ways than one. From
               give me my sites to{" "}
               <em className="italic text-gray-500">keeping track of tasks</em>,
               it's become my go-to tool for everything.”
