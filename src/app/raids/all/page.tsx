@@ -3,12 +3,19 @@ import { useState, useEffect, ReactNode } from "react";
 import Image from "next/image";
 import { useAccount, useChainId, useWalletClient } from "wagmi";
 import { Hex, createPublicClient, http } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { base, baseSepolia,polygonAmoy,sepolia } from "viem/chains";
 import { toast, ToastContainer } from "react-toastify";
 import Simplestore from "@/lib/Simplestore.json";
 import Header from "@/components/ui/header";
 // const { ethers } = require();
-import ethers from "ethers";
+
+// import ethers from "ethers";
+import { ethers } from "ethers";
+
+import MintingABI from "@/lib/MintingABI.json";
+
+// import { useAccount } from "wagmi";
+
 import { Hash } from "crypto";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -53,9 +60,11 @@ export default function DashboardPage() {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = createPublicClient({
-    chain: baseSepolia,
+    chain: sepolia,
     transport: http(),
   });
+
+  const [showButton, setShowButton] = useState(false);
 
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [countdown, setCountdown] = useState<number>(0);
@@ -78,7 +87,6 @@ export default function DashboardPage() {
     const timeLeft = Math.floor((endDate - currentTime) / 1000); // in seconds
     return timeLeft > 0 ? timeLeft : 0;
   };
-  
 
   const formatCountdown = (seconds: number) => {
     const days = Math.floor(seconds / (3600 * 24));
@@ -96,9 +104,9 @@ export default function DashboardPage() {
 
   const handleJoinClick = (trip: Trip) => {
     setSelectedTrip(trip); // Set the selected trip dynamically
-    setCountdown(calculateRemainingTime(trip.validTill)); 
+    setCountdown(calculateRemainingTime(trip.validTill));
     setIsJoinDialogOpen(true); // Open the join dialog
-  };  
+  };
 
   const handleCloseDialog = () => {
     setIsJoinDialogOpen(false);
@@ -119,7 +127,7 @@ export default function DashboardPage() {
   };
 
   const handleSupportClick = () => {
-    console.log("Provide Support button clicked");
+    window.location.href = "/chat";
   };
 
   useEffect(() => {
@@ -192,8 +200,8 @@ export default function DashboardPage() {
       });
 
       const txn = await publicClient.waitForTransactionReceipt({ hash });
-      console.log(txn)
-      console.log(txn.contractAddress)
+      console.log(txn);
+      console.log(txn.contractAddress);
       // const txHash = hash;
       // const providerUrl = "wss://base-sepolia-rpc.publicnode.com";
 
@@ -242,6 +250,56 @@ export default function DashboardPage() {
   ) => {
     const { id, value } = e.target;
     setTripInput((prevInput) => ({ ...prevInput, [id]: value }));
+  };
+
+  // MINT FUN
+  const handleMint = async () => {
+    const contractAddress = "0xEA95D30784d62602fb1e5B9461CE22214960b521";
+    const contractABI = [
+      {
+        "inputs": [],
+        "name": "safeMint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+      },
+    ];
+
+    try {
+      // Get provider and signer
+      if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        // Create a contract instance
+        const contract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        toast.loading("Minting NFT", {
+          position: "top-right",
+        });
+
+        // Call the safeMint method
+        const tx = await contract.safeMint();
+
+        // Wait for the transaction to be mined
+        await tx.wait();
+
+        console.log("Mint successful!");
+        setShowButton(true);
+        toast.dismiss();
+        toast.success("Minted NFT successfully!", {
+          position: "top-right",
+        });
+      } else {
+        console.error("No Ethereum provider detected");
+      }
+    } catch (error) {
+      console.error("Error minting:", error);
+    }
   };
 
   return (
@@ -352,8 +410,18 @@ export default function DashboardPage() {
                   </div>
                   {/* <button onClick={handleJoinClick}>JOIN NOW</button> */}
                 </div>
-                <button onClick={() => handleJoinClick(trip)} style={{backgroundColor:'white',padding:'5px 20px',borderRadius:'15px',color:'black',marginTop:'10px'}}>JOIN NOW</button>
-
+                <button
+                  onClick={() => handleJoinClick(trip)}
+                  style={{
+                    backgroundColor: "white",
+                    padding: "5px 20px",
+                    borderRadius: "15px",
+                    color: "black",
+                    marginTop: "10px",
+                  }}
+                >
+                  JOIN NOW
+                </button>
               </div>
 
               <div className="absolute inset-y-0 left-0 w-6 bg-black border-l border-gray-800 rounded-r-full"></div>
@@ -557,7 +625,8 @@ export default function DashboardPage() {
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-4xl w-full relative">
               <button
                 onClick={() => setIsJoinDialogOpen(false)}
-                className="absolute top-4 right-4 text-red-500 text-2xl" style={{margin:'10px 20px'}}
+                className="absolute top-4 right-4 text-red-500 text-2xl"
+                style={{ margin: "10px 20px" }}
               >
                 &times;
               </button>
@@ -645,39 +714,40 @@ export default function DashboardPage() {
                   {/* Buttons */}
                   <div className="flex justify-around">
                     <button
-                      onClick={handleMindClick}
+                      onClick={handleMint}
                       // className="bg-blue-500 text-white px-4 py-2 rounded-md font-bold mr-4" style={{width:'200px'}}
                     >
                       <a
-                    className="btn group mb-4 w-full text-white shadow hover:opacity-90 transition-all duration-300 sm:mb-0 sm:w-auto"
-                    href="#0"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
-                      boxShadow: "rgba(96, 60, 255, 0.48) 0px 21px 27px -10px",
-                      padding: "10px 20px",
-                      borderRadius: "30px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "34px", 
-                    }}
-                  >
-                    <span className="relative inline-flex items-center justify-center">
-                      MINT{" "}
-                      <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </a>
+                        className="btn group mb-4 w-full text-white shadow hover:opacity-90 transition-all duration-300 sm:mb-0 sm:w-auto"
+                        href="#0"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
+                          boxShadow:
+                            "rgba(96, 60, 255, 0.48) 0px 21px 27px -10px",
+                          padding: "10px 20px",
+                          borderRadius: "30px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: "34px",
+                        }}
+                      >
+                        <span className="relative inline-flex items-center justify-center">
+                          Mint NFT
+                          <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
+                            -&gt;
+                          </span>
+                        </span>
+                      </a>
                     </button>
 
-                    <button
+                    {showButton && <button
                       onClick={handleSupportClick}
                       className="text-black-500 border border-black-500 px-4 py-2 rounded-md font-bold"
                     >
                       Chat
-                    </button>
+                    </button> }
                   </div>
                 </div>
               </div>
