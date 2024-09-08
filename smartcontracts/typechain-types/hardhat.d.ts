@@ -13,6 +13,22 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "ISP",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISP__factory>;
+    getContractFactory(
+      name: "ISPHook",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ISPHook__factory>;
+    getContractFactory(
+      name: "IVersionable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IVersionable__factory>;
+    getContractFactory(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
       name: "IERC1155Errors",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1155Errors__factory>;
@@ -73,6 +89,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
     getContractFactory(
+      name: "ActuallyMetIRL",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ActuallyMetIRL__factory>;
+    getContractFactory(
       name: "IACCESSMASTER",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IACCESSMASTER__factory>;
@@ -80,7 +100,31 @@ declare module "hardhat/types/runtime" {
       name: "Raids",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Raids__factory>;
+    getContractFactory(
+      name: "SimpleRaidNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SimpleRaidNFT__factory>;
 
+    getContractAt(
+      name: "ISP",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISP>;
+    getContractAt(
+      name: "ISPHook",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ISPHook>;
+    getContractAt(
+      name: "IVersionable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IVersionable>;
+    getContractAt(
+      name: "Ownable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Ownable>;
     getContractAt(
       name: "IERC1155Errors",
       address: string,
@@ -157,6 +201,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Strings>;
     getContractAt(
+      name: "ActuallyMetIRL",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ActuallyMetIRL>;
+    getContractAt(
       name: "IACCESSMASTER",
       address: string,
       signer?: ethers.Signer
@@ -166,6 +215,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Raids>;
+    getContractAt(
+      name: "SimpleRaidNFT",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SimpleRaidNFT>;
 
     // default types
     getContractFactory(
