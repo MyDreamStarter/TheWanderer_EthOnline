@@ -7,7 +7,6 @@ import { base, baseSepolia } from "viem/chains";
 import { toast, ToastContainer } from "react-toastify";
 import Simplestore from "@/lib/Simplestore.json";
 import Header from "@/components/ui/header";
-// const { ethers } = require();
 import ethers from "ethers";
 import { Hash } from "crypto";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,10 +14,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ApeProfile from "../../../../public/assets/ape_profile.png";
 import Trees from "../../../../public/assets/trees.png.webp";
 
-interface Trip {
+interface Community {
   fundingGoal: ReactNode;
-  validTill: ReactNode;
-  raidType: ReactNode;
   id: number;
   title: string;
   twitter: string;
@@ -27,28 +24,24 @@ interface Trip {
   price: number;
 }
 
-interface TripInput {
+interface CommunityInput {
   title: string;
   twitter: string;
   description: string;
   price: number;
   fundingGoal: number;
-  validTill: string;
-  raidType: string;
 }
 
 export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [tripInput, setTripInput] = useState<TripInput>({
+  const [communityInput, setCommunityInput] = useState<CommunityInput>({
     title: "",
     twitter: "",
     description: "",
     price: 0,
     fundingGoal: 0,
-    validTill: "",
-    raidType: "solo",
   });
-  const [trips, setTrips] = useState<Trip[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const { address: walletAddress } = useAccount();
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
@@ -60,25 +53,14 @@ export default function DashboardPage() {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [countdown, setCountdown] = useState<number>(0);
 
-  // JOIN NOW SELECTED TRIP STATES
-  const [selectedTrip, setSelectedTrip] = useState({
-    title: "Sample Trip",
+  // JOIN NOW SELECTED COMMUNITY STATES
+  const [selectedCommunity, setSelectedCommunity] = useState({
+    title: "Sample Community",
     twitter: "creator_twitter",
-    description: "This is a sample description of the trip.",
+    description: "This is a sample description of the community.",
     price: 50,
     fundingGoal: 1000,
-    validTill: "2024-09-10T12:00:00",
-    raidType: "Type A",
   });
-
-  // END TIME COUNTER FUNCTION
-  const calculateRemainingTime = (validTill: string) => {
-    const endDate = new Date(validTill).getTime();
-    const currentTime = new Date().getTime();
-    const timeLeft = Math.floor((endDate - currentTime) / 1000); // in seconds
-    return timeLeft > 0 ? timeLeft : 0;
-  };
-  
 
   const formatCountdown = (seconds: number) => {
     const days = Math.floor(seconds / (3600 * 24));
@@ -89,15 +71,9 @@ export default function DashboardPage() {
     return `${days}d ${hours}h ${minutes}m ${secs}s`;
   };
 
-  // const handleJoinClick = () => {
-  //   setIsJoinDialogOpen(true);
-  //   setCountdown(calculateRemainingTime());
-  // };
-
-  const handleJoinClick = (trip: Trip) => {
-    setSelectedTrip(trip); // Set the selected trip dynamically
-    setCountdown(calculateRemainingTime(trip.validTill)); 
-    setIsJoinDialogOpen(true); // Open the join dialog
+  const handleJoinClick = (community: Community) => {
+    setSelectedCommunity(community);
+    setIsJoinDialogOpen(true);
   };  
 
   const handleCloseDialog = () => {
@@ -123,19 +99,17 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    const savedTrips = JSON.parse(localStorage.getItem("trips") || "[]");
-    setTrips(savedTrips);
+    const savedCommunities = JSON.parse(localStorage.getItem("communities") || "[]");
+    setCommunities(savedCommunities);
   }, []);
 
   async function getContractAddressFromTxHash(
     txHash: string | Promise<string>,
     providerUrl: string | ethers.ethers.utils.ConnectionInfo | undefined
   ) {
-    // Connect to an Ethereum node
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
     try {
-      // Get the transaction receipt
       const txReceipt = await provider.getTransactionReceipt(txHash);
 
       if (txReceipt && txReceipt.contractAddress) {
@@ -174,15 +148,15 @@ export default function DashboardPage() {
       console.log("Wallet Address:", walletAddress);
       console.log("Wallet Client:", walletClient);
 
-      const newTrip: Trip = {
-        id: trips.length + 1,
-        ...tripInput,
+      const newCommunity: Community = {
+        id: communities.length + 1,
+        ...communityInput,
         image: "/default.jpg",
       };
 
-      const updatedTrips = [...trips, newTrip];
-      setTrips(updatedTrips);
-      localStorage.setItem("trips", JSON.stringify(updatedTrips));
+      const updatedCommunities = [...communities, newCommunity];
+      setCommunities(updatedCommunities);
+      localStorage.setItem("communities", JSON.stringify(updatedCommunities));
       console.log("Contract deployed successfully!");
 
       setIsDialogOpen(false);
@@ -194,31 +168,17 @@ export default function DashboardPage() {
       const txn = await publicClient.waitForTransactionReceipt({ hash });
       console.log(txn)
       console.log(txn.contractAddress)
-      // const txHash = hash;
-      // const providerUrl = "wss://base-sepolia-rpc.publicnode.com";
-
-      // const txn = await getContractAddressFromTxHash(txHash, providerUrl);
-
-      console.log("Transaction Receipt:", txn);
-
-      // const contractAddress =  getContractAddressFromTxHash(hash);
-
-      // if (contractAddress) {
-      //     console.log("Contract Address:", contractAddress);
-      // } else {
-      //     console.warn("Failed to retrieve contract address.");
-      // }
 
       if (txn) {
-        const newTrip: Trip = {
-          id: trips.length + 1,
-          ...tripInput,
+        const newCommunity: Community = {
+          id: communities.length + 1,
+          ...communityInput,
           image: "/default.jpg",
         };
 
-        const updatedTrips = [...trips, newTrip];
-        setTrips(updatedTrips);
-        localStorage.setItem("trips", JSON.stringify(updatedTrips));
+        const updatedCommunities = [...communities, newCommunity];
+        setCommunities(updatedCommunities);
+        localStorage.setItem("communities", JSON.stringify(updatedCommunities));
         console.log("Contract deployed successfully!");
 
         setIsDialogOpen(false);
@@ -229,9 +189,6 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error("Deployment error:", error);
-      // toast.error("Error deploying contract: " + error, {
-      //   position: "top-left",
-      // });
     }
   };
 
@@ -241,7 +198,7 @@ export default function DashboardPage() {
     >
   ) => {
     const { id, value } = e.target;
-    setTripInput((prevInput) => ({ ...prevInput, [id]: value }));
+    setCommunityInput((prevInput) => ({ ...prevInput, [id]: value }));
   };
 
   return (
@@ -252,7 +209,7 @@ export default function DashboardPage() {
           <div className="relative mt-10">
             <input
               type="text"
-              placeholder="Search trips..."
+              placeholder="Search communities..."
               className="pl-10 pr-4 py-2 border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <svg
@@ -274,86 +231,46 @@ export default function DashboardPage() {
             onClick={() => setIsDialogOpen(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out"
           >
-            Create Trip
+            Create Community
           </button>
         </header>
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trips.map((trip) => (
-            <div
-              key={trip.id}
-              className="bg-white border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1"
-            >
-              <div className="relative h-48">
-                <Image
-                  src={trip.image}
-                  alt={trip.title}
-                  layout="fill"
-                  objectFit="cover"
-                />
-              </div>
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2">{trip.title}</h2>
-                <p className="text-gray-600 mb-4">{trip.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-green-600 font-bold">
-                    ${trip.price} USDC
-                  </span>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 ease-in-out">
-                    Join
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div> */}
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trips.map((trip) => (
+          {communities.map((community) => (
             <div
-              key={trip.id}
+              key={community.id}
               className="relative bg-black text-white rounded-lg shadow-lg overflow-hidden border-2 border-gray-800 p-5 hover:shadow-xl transition duration-300 ease-in-out"
             >
               <div className="flex justify-between items-center p-4">
                 <div className="flex items-center space-x-4">
                   <Image
                     src={Trees}
-                    alt={trip.title}
+                    alt={community.title}
                     width={40}
                     height={40}
                     className="rounded-full"
                   />
                   <div>
-                    <h4 className="text-xl font-semibold">{trip.title}</h4>
-                    <p className="text-sm text-gray-400">@{trip.twitter}</p>
+                    <h4 className="text-xl font-semibold">{community.title}</h4>
+                    <p className="text-sm text-gray-400">@{community.twitter}</p>
                   </div>
                 </div>
-                <p className="text-sm font-semibold">No {trip.id}</p>
+                <p className="text-sm font-semibold">No {community.id}</p>
               </div>
 
               <div className="bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B] h-1"></div>
 
               <div className="p-4 space-y-2">
-                <p className="text-lg">{trip.description}</p>
+                <p className="text-lg">{community.description}</p>
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="font-bold">${trip.price} USDC</span>
+                    <span className="font-bold">${community.price} USDC</span>
                     <span className="block text-xs text-gray-400">
-                      Funding Goal: ${trip.fundingGoal}
+                      Funding Goal: ${community.fundingGoal}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <span className="block text-xs text-gray-400">
-                      Valid Till: {trip.validTill}
-                    </span>
-                    <span className="block text-xs text-gray-400">
-                      Type: {trip.raidType}
-                    </span>
-                  </div>
-                  {/* <button onClick={handleJoinClick}>JOIN NOW</button> */}
                 </div>
-                <button onClick={() => handleJoinClick(trip)} style={{backgroundColor:'white',padding:'5px 20px',borderRadius:'15px',color:'black',marginTop:'10px'}}>JOIN NOW</button>
-
+                <button onClick={() => handleJoinClick(community)} style={{backgroundColor:'white',padding:'5px 20px',borderRadius:'15px',color:'black',marginTop:'10px'}}>JOIN NOW</button>
               </div>
 
               <div className="absolute inset-y-0 left-0 w-6 bg-black border-l border-gray-800 rounded-r-full"></div>
@@ -368,19 +285,19 @@ export default function DashboardPage() {
               <div className="flex">
                 {/* Left Side: Input Details */}
                 <div className="w-1/2 p-4 border-r">
-                  <h2 className="text-2xl font-bold mb-4">Create Trip</h2>
+                  <h2 className="text-2xl font-bold mb-4">Create Community</h2>
                   <form>
                     <div className="mb-4">
                       <label
                         htmlFor="title"
                         className="block mb-2 font-semibold"
                       >
-                        Trip Title
+                        Community Title
                       </label>
                       <input
                         type="text"
                         id="title"
-                        value={tripInput.title}
+                        value={communityInput.title}
                         onChange={handleInputChange}
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       />
@@ -395,7 +312,7 @@ export default function DashboardPage() {
                       <input
                         type="text"
                         id="twitter"
-                        value={tripInput.twitter}
+                        value={communityInput.twitter}
                         onChange={handleInputChange}
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       />
@@ -409,7 +326,7 @@ export default function DashboardPage() {
                       </label>
                       <input
                         id="description"
-                        value={tripInput.description}
+                        value={communityInput.description}
                         onChange={handleInputChange}
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       ></input>
@@ -424,7 +341,7 @@ export default function DashboardPage() {
                       <input
                         type="number"
                         id="price"
-                        value={tripInput.price}
+                        value={communityInput.price}
                         onChange={handleInputChange}
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       />
@@ -439,43 +356,10 @@ export default function DashboardPage() {
                       <input
                         type="number"
                         id="fundingGoal"
-                        value={tripInput.fundingGoal}
+                        value={communityInput.fundingGoal}
                         onChange={handleInputChange}
                         className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                       />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="validTill"
-                        className="block mb-2 font-semibold"
-                      >
-                        Valid Till
-                      </label>
-                      <input
-                        type="date"
-                        id="validTill"
-                        value={tripInput.validTill}
-                        onChange={handleInputChange}
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        htmlFor="raidType"
-                        className="block mb-2 font-semibold"
-                      >
-                        Type of Trip
-                      </label>
-                      <select
-                        id="raidType"
-                        value={tripInput.raidType}
-                        onChange={handleInputChange}
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                      >
-                        <option value="solo">Solo</option>
-                        <option value="group">Group</option>
-                        <option value="travel">Travel</option>
-                      </select>
                     </div>
                   </form>
                 </div>
@@ -493,36 +377,28 @@ export default function DashboardPage() {
                       />
                       <div>
                         <h4 className="text-xl font-semibold">
-                          {tripInput.title}
+                          {communityInput.title}
                         </h4>
                         <p className="text-sm text-gray-400">
-                          @{tripInput.twitter}
+                          @{communityInput.twitter}
                         </p>
                       </div>
                     </div>
                     <p className="text-sm font-semibold">No 014747</p>
                   </div>
 
-                  {/* <div className="bg-gradient-to-r from-pink-500 via-yellow-500 to-blue-500 h-1"></div> */}
+                  <div className="bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B]"></div> 
                   <div className="bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B] h-1"></div>
 
                   <div className="p-4 space-y-2">
-                    <p className="text-lg">{tripInput.description}</p>
+                    <p className="text-lg">{communityInput.description}</p>
                     <div className="flex justify-between items-center">
                       <div>
                         <span className="font-bold">
-                          ${tripInput.price} USDC
+                          ${communityInput.price} USDC
                         </span>
                         <span className="block text-xs text-gray-400">
-                          Funding Goal: ${tripInput.fundingGoal}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-xs text-gray-400">
-                          Valid Till: {tripInput.validTill}
-                        </span>
-                        <span className="block text-xs text-gray-400">
-                          Type: {tripInput.raidType}
+                          Funding Goal: ${communityInput.fundingGoal}
                         </span>
                       </div>
                     </div>
@@ -544,7 +420,7 @@ export default function DashboardPage() {
                   onClick={deployContract}
                   className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300 ease-in-out"
                 >
-                  Deploy Trip Contract
+                  Deploy Community Contract
                 </button>
               </div>
             </div>
@@ -575,10 +451,10 @@ export default function DashboardPage() {
                       />
                       <div>
                         <h4 className="text-2xl font-semibold">
-                          {selectedTrip.title}
+                          {selectedCommunity.title}
                         </h4>
                         <p className="text-sm text-gray-400">
-                          @{selectedTrip.twitter}
+                          @{selectedCommunity.twitter}
                         </p>
                       </div>
                     </div>
@@ -588,22 +464,14 @@ export default function DashboardPage() {
                   <div className="bg-gradient-to-r from-[#3D1DFF] via-[#6147FF] via-[#D451FF] via-[#EC458D] to-[#FFCA8B] h-1 mb-4"></div>
 
                   <div className="space-y-4">
-                    <p className="text-lg">{selectedTrip.description}</p>
+                    <p className="text-lg">{selectedCommunity.description}</p>
                     <div className="flex justify-between items-center">
                       <div>
                         <span className="font-bold">
-                          ${selectedTrip.price} USDC
+                          ${selectedCommunity.price} USDC
                         </span>
                         <span className="block text-xs text-gray-400">
-                          Funding Goal: ${selectedTrip.fundingGoal}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-xs text-gray-400">
-                          Valid Till: {selectedTrip.validTill}
-                        </span>
-                        <span className="block text-xs text-gray-400">
-                          Type: {selectedTrip.raidType}
+                          Funding Goal: ${selectedCommunity.fundingGoal}
                         </span>
                       </div>
                     </div>
@@ -615,25 +483,6 @@ export default function DashboardPage() {
 
                 {/* Right side content */}
                 <div className="w-full md:w-1/2 mt-6 md:mt-0 md:pl-6 space-y-6">
-                  {/* Countdown Timer */}
-                  <div className="text-center bg-gray-200 p-4 rounded-md shadow-md">
-                    <h4 className="text-lg font-semibold">
-                      Joining Time Ends In
-                    </h4>
-                    <p className="text-2xl font-bold">
-                      {/* {Math.floor(
-                (new Date(selectedTrip.validTill).getTime() -
-                  new Date().getTime()) /
-                  1000
-              )}{" "}
-              seconds */}
-                      {formatCountdown(countdown)}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      (until {selectedTrip.validTill})
-                    </p>
-                  </div>
-
                   {/* Support creator message */}
                   <div className="bg-gray-100 p-4 rounded-md shadow-md">
                     <p className="text-sm">
@@ -644,32 +493,29 @@ export default function DashboardPage() {
 
                   {/* Buttons */}
                   <div className="flex justify-around">
-                    <button
-                      onClick={handleMindClick}
-                      // className="bg-blue-500 text-white px-4 py-2 rounded-md font-bold mr-4" style={{width:'200px'}}
-                    >
+                    <button onClick={handleMindClick}>
                       <a
-                    className="btn group mb-4 w-full text-white shadow hover:opacity-90 transition-all duration-300 sm:mb-0 sm:w-auto"
-                    href="#0"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
-                      boxShadow: "rgba(96, 60, 255, 0.48) 0px 21px 27px -10px",
-                      padding: "10px 20px",
-                      borderRadius: "30px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "34px", 
-                    }}
-                  >
-                    <span className="relative inline-flex items-center justify-center">
-                      MINT{" "}
-                      <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </a>
+                        className="btn group mb-4 w-full text-white shadow hover:opacity-90 transition-all duration-300 sm:mb-0 sm:w-auto"
+                        href="#0"
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(15.46deg, rgb(74, 37, 225) 26.3%, rgb(123, 90, 255) 86.4%)",
+                          boxShadow: "rgba(96, 60, 255, 0.48) 0px 21px 27px -10px",
+                          padding: "10px 20px",
+                          borderRadius: "30px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minHeight: "34px", 
+                        }}
+                      >
+                        <span className="relative inline-flex items-center justify-center">
+                          MINT{" "}
+                          <span className="ml-1 tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">
+                            -&gt;
+                          </span>
+                        </span>
+                      </a>
                     </button>
 
                     <button
