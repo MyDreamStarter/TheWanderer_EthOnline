@@ -51,7 +51,7 @@ export default function Header() {
                 Register
               </Link> */}
             </li>
-            <li style={{ color: "grey" }}>
+            {/* <li style={{ color: "grey" }}>
               <Link
                 href="/"
                 className=" text-gray-800  hover:bg-gray-50 "
@@ -59,7 +59,7 @@ export default function Header() {
               >
                 Home
               </Link>
-            </li>
+            </li> */}
             <li style={{ color: "grey" }}>
               <Link
                 href="/raids"
@@ -80,7 +80,7 @@ export default function Header() {
               </Link>
             </li>
 
-            <li style={{ color: "grey" }}>
+            {/* <li style={{ color: "grey" }}>
               <Link
                 href="#"
                 className=" text-gray-800  hover:bg-gray-50 "
@@ -88,11 +88,11 @@ export default function Header() {
               >
                 Explore
               </Link>
-            </li>
+            </li> */}
 
             <li style={{ color: "grey" }}>
               <Link
-                href="#"
+                href="/cult"
                 className=" text-gray-800  hover:bg-gray-50 "
                 style={{ padding: "10px" }}
               >
