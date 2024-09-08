@@ -15,7 +15,7 @@ import ApeProfile from "../../../../public/assets/ape_profile.png";
 import Trees from "../../../../public/assets/trees.png.webp";
 
 interface Community {
-  fundingGoal: ReactNode;
+  fundingGoal: number;
   id: number;
   title: string;
   twitter: string;

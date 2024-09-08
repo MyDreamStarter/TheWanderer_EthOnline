@@ -10,6 +10,7 @@ import Header from "@/components/ui/header";
 // const { ethers } = require();
 
 // import ethers from "ethers";
+// import { ethers } from "ethers";
 import { ethers } from "ethers";
 
 import MintingABI from "@/lib/MintingABI.json";
@@ -22,10 +23,22 @@ import "react-toastify/dist/ReactToastify.css";
 import ApeProfile from "../../../../public/assets/ape_profile.png";
 import Trees from "../../../../public/assets/trees.png.webp";
 
+// interface Trip {
+//   fundingGoal: ReactNode;
+//   validTill: ReactNode;
+//   raidType: ReactNode;
+//   id: number;
+//   title: string;
+//   twitter: string;
+//   description: string;
+//   image: string;
+//   price: number;
+// }
+
 interface Trip {
-  fundingGoal: ReactNode;
-  validTill: ReactNode;
-  raidType: ReactNode;
+  fundingGoal: number;    // Change from ReactNode to number
+  validTill: string;      // Change from ReactNode to string
+  raidType: string;       // Change from ReactNode to string
   id: number;
   title: string;
   twitter: string;
@@ -33,6 +46,7 @@ interface Trip {
   image: string;
   price: number;
 }
+
 
 interface TripInput {
   title: string;
@@ -137,7 +151,7 @@ export default function DashboardPage() {
 
   async function getContractAddressFromTxHash(
     txHash: string | Promise<string>,
-    providerUrl: string | ethers.ethers.utils.ConnectionInfo | undefined
+    providerUrl: string | ethers.utils.ConnectionInfo | undefined
   ) {
     // Connect to an Ethereum node
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
